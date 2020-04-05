@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Доступные загадки</title>
+</head>
+<body>
+<h1>Доступные загадки:</h1>
+{% if message %}
+    <p><strong>{{ message }}</strong></p>
+{% endif %}
+{% if latest_riddles %}
+    <ul>
+        {% for riddle in latest_riddles %}
+            <li>
+                <a href="/riddles/{{ riddle.id }}/">
+                    {{ riddle.riddle_text }}
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>Сейчас никаких загадок не существует.</p>
+{% endif %}
+</body>
+</html>
