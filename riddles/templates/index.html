@@ -5,22 +5,27 @@
     <title>Доступные загадки</title>
 </head>
 <body>
-<h1>Доступные загадки:</h1>
+{% extends 'base.html' %}
+{% block main %}
+    <h4 class="card-title">Доступные загадки:</h4>
 {% if message %}
-    <p><strong>{{ message }}</strong></p>
-{% endif %}
-{% if latest_riddles %}
-    <ul>
-        {% for riddle in latest_riddles %}
-            <li>
-                <a href="/riddles/{{ riddle.id }}/">
-                    {{ riddle.riddle_text }}
-                </a>
-            </li>
-        {% endfor %}
-    </ul>
-{% else %}
+        <p class="alert alert-success">
+            <strong>{{ message }}</strong>
+        </p>
+    {% endif %}
+    {% if latest_riddles %}
+        <ul>
+            {% for riddle in latest_riddles %}
+                <li>
+                    <a href="/riddles/{{ riddle.id }}/">
+                        {{ riddle.riddle_text }}
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
     <p>Сейчас никаких загадок не существует.</p>
 {% endif %}
+{% endblock %}
 </body>
 </html>

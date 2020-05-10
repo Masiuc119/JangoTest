@@ -5,22 +5,27 @@
     <title>Выберите ответ</title>
 </head>
 <body>
-<h1>{{ riddle.riddle_text }}</h1>
-<p>    <strong>{{ method }}</strong>    </p>
+{% extends 'base.html' %}
+{% block main %}
+<h4 class="card-title">{{ riddle.riddle_text }}</h4>
 {% if error_message %}
-    <p>
+    <p class="alert alert-danger">
         <strong>{{ error_message }}</strong>
     </p>
 {% endif %}
 <form action="answer/" method="post">
     {% csrf_token %}
     {% for option in riddle.option_set.all %}
-        <input type="radio" name="option" id="option{{ forloop.counter }}" value="{{ option.id }}" />
+        <input type="radio" name="option"
+            id="option{{ forloop.counter }}"
+            value="{{ option.id }}"/>
         <label for="option{{ forloop.counter }}">
             {{ option.text }}
         </label><br>
     {% endfor %}
-    <input type="submit" value="Ответ" />
+    <input type="submit" value="Answer"/>
 </form>
+{% endblock %}
+
 </body>
 </html>
