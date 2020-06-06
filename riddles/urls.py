@@ -22,4 +22,6 @@ urlpatterns = [
     url(r'^([0-9]+)/get_mark/$', views.get_mark, name='get_mark'),
     url(r'^admin/$', views.admin, name='admin'),
     url(r'^post_riddle/$', views.post_riddle, name='post_riddle'),
+    url(r'^subscribe/$', views.SubscribeView.as_view()),
+    url(r'^unsubscribe/$', views.unsubscribe, name='unsubscribe'),
 ]

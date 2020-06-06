@@ -117,3 +117,12 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
+
+# настройка отправки почты -
+# параметры подключения к почтовому SMTP-серверу
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'masiuc1.19.noreply@gmail.com'
+EMAIL_HOST_PASSWORD = 'q1a2z3w4s5x6'
+EMAIL_PORT = 465
+EMAIL_USE_SSL = True
+

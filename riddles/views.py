@@ -1,3 +1,5 @@
+from django.contrib.auth.models import User
+from django.core.mail import send_mail
 from django.db.models import Avg
 from django.shortcuts import get_object_or_404, render, redirect
 
@@ -71,16 +73,15 @@ def detail(request, riddle_id):
                     .filter(author_id=request.user.id)
                     .filter(riddle_id=riddle_id)
                     .aggregate(Avg('mark'))
-                    ["mark__avg"],
+                ["mark__avg"],
             # средняя по всем пользователям оценка
             "avg_mark":
                 Mark.objects
                     .filter(riddle_id=riddle_id)
                     .aggregate(Avg('mark'))
-                    ["mark__avg"]
+                ["mark__avg"]
         }
     )
-
 
 
 # для ответа на асинхронный запрос в формате JSON
@@ -321,4 +322,82 @@ def post_riddle(request):
     except:
         pass
 
+    # цикл по всем пользователям
+    for i in User.objects.all():
+        # проверка, что текущий пользователь подписан - указал e-mail
+        if i.email != '':
+            send_mail(
+                # тема письма
+                'New riddle',
+                # текст письма
+                'A new riddle was added on riddles portal:\n' +
+                'http://localhost:8000/riddles/' + str(rid.id) + '.',
+                # отправитель
+                'masiuc1.19.noreply@gmail.com',
+                # список получателей из одного получателя
+                [i.email],
+                # отключаем замалчивание ошибок,
+                # чтобы из видеть и исправлять
+                False
+            )
     return HttpResponseRedirect(app_url + str(rid.id))
+
+
+from django import forms
+from django.utils.translation import gettext, gettext_lazy as _
+
+
+# ...
+
+
+# класс, описывающий логику формы:
+# список заполняемых полей и их сохранение
+class SubscribeForm(forms.Form):
+    # поле для ввода e-mail
+    email = forms.EmailField(
+        label=_("E-mail"),
+        required=True,
+    )
+
+    # конструктор для запоминания пользователя,
+    # которому задается e-mail
+    def __init__(self, user, *args, **kwargs):
+        self.user = user
+        super().__init__(*args, **kwargs)
+
+    # сохранение e-mail
+    def save(self, commit=True):
+        self.user.email = self.cleaned_data["email"]
+        if commit:
+            self.user.save()
+        return self.user
+
+
+# класс, описывающий взаимодействие логики
+# со страницами веб-приложения
+class SubscribeView(FormView):
+    # используем класс с логикой
+    form_class = SubscribeForm
+    # используем собственный шаблон
+    template_name = 'subscribe.html'
+    # после подписки возвращаем на главную станицу
+    success_url = app_url
+
+    # передача пользователя для конструктора класса с логикой
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
+
+    # вызов логики сохранения введенных данных
+    def form_valid(self, form):
+        form.save()
+        return HttpResponseRedirect(self.success_url)
+
+
+# функция для удаления подписки (форма не нужна,
+# поэтому без классов, просто функция)
+def unsubscribe(request):
+    request.user.email = ''
+    request.user.save()
+    return HttpResponseRedirect(app_url)
